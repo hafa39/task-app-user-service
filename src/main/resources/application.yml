@@ -1,0 +1,21 @@
+server:
+  port: 9003
+
+spring:
+  application:
+    name: user-service
+  security:
+    oauth2:
+      client:
+        registration:
+          keycloak:
+            client-id: vue-user-client
+            client-secret: 3MI6clWEdNMHiLGcbNGz8BEHGq3tSS03
+            authorization-grant-type: client_credentials
+
+        provider:
+          keycloak:
+            issuer-uri: http://localhost:8080/realms/TaskAgile
+
+keycloak:
+  host: http://localhost:8080
