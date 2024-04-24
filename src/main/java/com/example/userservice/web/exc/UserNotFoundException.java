@@ -1,8 +1,7 @@
 package com.example.userservice.web.exc;
 
-public class UserNotFoundException extends RuntimeException {
-    public UserNotFoundException(String message) {
-        super(message);
+public class UserNotFoundException extends NotFoundException {
+    public UserNotFoundException(String userId) {
+        super("User with id: "+userId+" is not found");
     }
-    // Add any additional constructors or methods as needed
 }

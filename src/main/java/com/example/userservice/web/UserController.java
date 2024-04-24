@@ -1,39 +1,41 @@
 package com.example.userservice.web;
 
-import com.example.userservice.domain.User;
-import com.example.userservice.web.exc.GlobalExceptionHandler;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
-import org.springframework.security.oauth2.client.annotation.RegisteredOAuth2AuthorizedClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.reactive.function.client.WebClient;
-
-import static org.springframework.security.oauth2.client.web.reactive.function.client.ServletOAuth2AuthorizedClientExchangeFilterFunction.oauth2AuthorizedClient;
+import com.example.userservice.domain.user.User;
+import com.example.userservice.domain.user.UserPayload;
+import com.example.userservice.service.KeycloakUserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class UserController {
 
-    @Value("${keycloak.host}")
-    private String keycloakHost;
-    private WebClient webClient;
+    private static final Logger log =
+            LoggerFactory.getLogger(UserController.class);
+    private final KeycloakUserService keycloakUserService;
 
-    public UserController(WebClient webClient) {
-        this.webClient = webClient;
+    public UserController(KeycloakUserService keycloakUserService) {
+        this.keycloakUserService = keycloakUserService;
     }
 
     @GetMapping("/users/{id}")
-    public Object getUserById(@RegisteredOAuth2AuthorizedClient("keycloak")
-                              OAuth2AuthorizedClient authorizedClient,
-                              @PathVariable(name = "id") String userId) {
-        return webClient
-                .get()
-                .uri(keycloakHost+"/admin/realms/TaskAgile/users/"+userId)
-                .attributes(oauth2AuthorizedClient(authorizedClient))
-                .retrieve()
-                .bodyToMono(User.class)
-                .onErrorResume(Exception.class, GlobalExceptionHandler::handleError)
-                .block();
+    public User getUser(@PathVariable(name = "id") String userId) {
+        log.info("fetch user by id {}", userId);
+        User userById = keycloakUserService.getUserById(userId);
+        return userById;
+    }
+
+    @GetMapping("/extern/user")
+    public User getUser(@AuthenticationPrincipal Jwt jwt) {
+        log.info("access from {}", jwt.getSubject());
+        return keycloakUserService.getUserById(jwt.getSubject());
+    }
+
+    @PutMapping("/extern/user")
+    public User putUser(@AuthenticationPrincipal Jwt jwt, @RequestBody UserPayload userPayload) {
+        log.info("put user {}", jwt.getSubject());
+        return keycloakUserService.updateUser(jwt.getSubject(),userPayload);
     }
 }

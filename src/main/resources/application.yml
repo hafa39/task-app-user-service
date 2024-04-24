@@ -1,21 +1,39 @@
 server:
   port: 9003
-
 spring:
   application:
     name: user-service
+  datasource:
+    url: jdbc:postgresql://localhost:5432/taskdb_user
+    username: user
+    password: password
+
   security:
     oauth2:
-      client:
-        registration:
-          keycloak:
-            client-id: vue-user-client
-            client-secret: 3MI6clWEdNMHiLGcbNGz8BEHGq3tSS03
-            authorization-grant-type: client_credentials
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/TaskAgile
 
-        provider:
-          keycloak:
-            issuer-uri: http://localhost:8080/realms/TaskAgile
+#      client:
+#        registration:
+#          keycloak:
+#            client-id: vue-user-client
+#            client-secret: 3MI6clWEdNMHiLGcbNGz8BEHGq3tSS03
+#            authorization-grant-type: client_credentials
+#
+#        provider:
+#          keycloak:
+#            issuer-uri: http://localhost:8080/realms/TaskAgile
 
 keycloak:
-  host: http://localhost:8080
+  realm: TaskAgile
+  domain: localhost:8080
+  adminClientId: vue-user-client
+  adminClientSecret: 3MI6clWEdNMHiLGcbNGz8BEHGq3tSS03
+  urls:
+    auth: http://${keycloak.domain}
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+
