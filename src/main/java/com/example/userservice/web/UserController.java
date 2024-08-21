@@ -27,6 +27,13 @@ public class UserController {
         return userById;
     }
 
+    @GetMapping("/users")
+    public User getUserByUsername(@RequestParam(name = "username") String username) {
+        log.info("fetch user by username {}", username);
+        User userById = keycloakUserService.getUserByUsername(username);
+        return userById;
+    }
+
     @GetMapping("/extern/user")
     public User getUser(@AuthenticationPrincipal Jwt jwt) {
         log.info("access from {}", jwt.getSubject());

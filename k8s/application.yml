@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://task-postgres/taskdb_user
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://task-keycloak/realms/TaskAgile
+keycloak:
+  domain: task-keycloak

@@ -33,7 +33,18 @@ keycloak:
   urls:
     auth: http://${keycloak.domain}
 
-logging:
-  level:
-    org.springframework.security: DEBUG
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always
+      show-components: always
+      probes:
+        enabled: true
+#logging:
+#  level:
+#    org.springframework.security: DEBUG
 

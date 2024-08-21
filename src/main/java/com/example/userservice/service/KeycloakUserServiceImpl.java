@@ -2,6 +2,7 @@ package com.example.userservice.service;
 
 import com.example.userservice.domain.user.User;
 import com.example.userservice.domain.user.UserPayload;
+import com.example.userservice.web.exc.UserNotFoundException;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.UserResource;
@@ -32,6 +33,16 @@ public class KeycloakUserServiceImpl implements KeycloakUserService{
         UsersResource usersResource = getUsersResource();
         UserRepresentation ur = usersResource.get(userId).toRepresentation();
         List<String> roles = getRolesByUser(userId);
+        return new User(ur.getId(),ur.getUsername(),ur.getFirstName(),ur.getLastName(),roles);
+    }
+
+    @Override
+    public User getUserByUsername(String username) {
+        UsersResource usersResource = getUsersResource();
+        List<UserRepresentation> search = usersResource.search(username);
+        if (search.size()==0) throw new UserNotFoundException(username);
+        UserRepresentation ur = search.get(0);
+        List<String> roles = getRolesByUser(ur.getId());
         return new User(ur.getId(),ur.getUsername(),ur.getFirstName(),ur.getLastName(),roles);
     }
 

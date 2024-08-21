@@ -11,6 +11,8 @@ public interface KeycloakUserService {
 
     User getUserById(String userId);
 
+    User getUserByUsername(String username);
+
     User updateUser(String userId, UserPayload userPayload);
     void deleteUserById(String userId);
     void emailVerification(String userId);
